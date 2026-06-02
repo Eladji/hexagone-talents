@@ -13,7 +13,10 @@ const navItemsByRole = {
     ["chat", "Conv"],
   ],
   STAFF: [
-    ["home", "List"],
+    ["home", "Accueil"],
+    ["moderation", "Skills"],
+    ["offers", "Offres"],
+    ["accounts", "Comptes"],
     ["catalog", "Cat"],
     ["chat", "Conv"],
   ],

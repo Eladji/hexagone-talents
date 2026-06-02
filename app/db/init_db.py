@@ -74,6 +74,7 @@ def init_db() -> None:
         conn.executescript(CREATE_TABLES_SQL)
         _ensure_table_column(conn, "student", "avatar_url", "TEXT DEFAULT ''")
         _ensure_table_column(conn, "users", "password", "TEXT NOT NULL DEFAULT ''")
+        _ensure_table_column(conn, "users", "status", "TEXT NOT NULL DEFAULT 'ACTIVE'")
         _ensure_table_column(conn, "offer", "company_id", "INTEGER")
         _ensure_table_column(conn, "offer", "status", "TEXT NOT NULL DEFAULT 'ACTIVE'")
         _ensure_table_column(conn, "offer", "created_at", "TEXT DEFAULT ''")

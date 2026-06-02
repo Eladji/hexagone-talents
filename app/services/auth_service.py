@@ -16,6 +16,8 @@ def login(payload: LoginRequest) -> dict[str, Any]:
         ).fetchone()
         if not row or not verify_password(payload.password, row["password"]):
             raise HTTPException(status_code=401, detail={"message": "Identifiants invalides."})
+        if row["status"] == "SUSPENDED":
+            raise HTTPException(status_code=403, detail={"message": "Ce compte est suspendu par le staff."})
         user = row_to_dict(row)
 
     return {
