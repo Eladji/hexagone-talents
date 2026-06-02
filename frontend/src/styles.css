@@ -285,6 +285,16 @@ label {
   font-weight: 900;
 }
 
+.auth-avatar-preview {
+  width: 84px;
+  height: 84px;
+  margin: 0 auto;
+  border: 2px solid var(--primary);
+  border-radius: 4px;
+  object-fit: cover;
+  background: var(--bg-secondary);
+}
+
 .stack {
   display: grid;
   gap: 14px;

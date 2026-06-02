@@ -134,29 +134,22 @@ def _validate_skill_budget(skills: list[SkillWeightInput]) -> None:
             detail={"message": f"Erreur Validation : Vous ne pouvez pas selectionner plus de {MAX_SKILLS} competences."},
         )
 
-    if any(item.weight < MIN_SKILL_WEIGHT or item.weight > MAX_SKILL_WEIGHT for item in skills):
+    weights = [skill.weight for skill in skills]
+    skill_ids = [skill.skill_id for skill in skills]
+
+    if any(weight < MIN_SKILL_WEIGHT or weight > MAX_SKILL_WEIGHT for weight in weights):
         raise HTTPException(
             status_code=400,
-            detail={
-                "message": (
-                    "Chaque competence sauvegardee doit avoir entre "
-                    f"{MIN_SKILL_WEIGHT} et {MAX_SKILL_WEIGHT} points."
-                )
-            },
+            detail={"message": "Chaque competence sauvegardee doit avoir entre 1 et 100 points."},
         )
 
-    if sum(item.weight for item in skills) != TOTAL_SKILL_BUDGET:
+    if sum(weights) != TOTAL_SKILL_BUDGET:
         raise HTTPException(
             status_code=400,
-            detail={
-                "message": (
-                    "Erreur Validation : Le budget total de points doit etre strictement egal "
-                    f"a {TOTAL_SKILL_BUDGET}."
-                )
-            },
+            detail={"message": "Erreur Validation : Le budget total de points doit etre strictement egal a 100."},
         )
 
-    if len({item.skill_id for item in skills}) != len(skills):
+    if len(set(skill_ids)) != len(skill_ids):
         raise HTTPException(
             status_code=400,
             detail={"message": "Une competence ne peut pas etre selectionnee deux fois."},

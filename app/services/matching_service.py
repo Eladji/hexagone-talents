@@ -11,12 +11,6 @@ from app.schemas.matching import SwipeRequest
 from app.services.guards import ensure_company_owns_offer, ensure_offer, ensure_student
 
 
-DECISION_FIELDS = {
-    "ENTREPRISE": "company_decision",
-    "ETUDIANT": "student_decision",
-}
-
-
 def suggested_students(offer_id: int, auth: dict[str, Any]) -> dict[str, list[dict[str, Any]]]:
     with get_connection() as conn:
         ensure_company_owns_offer(conn, auth["user_id"], offer_id)
@@ -48,17 +42,19 @@ def submit_swipe(payload: SwipeRequest, auth: dict[str, Any]) -> dict[str, Any]:
     with get_connection() as conn:
         ensure_offer(conn, payload.offer_id)
         ensure_student(conn, payload.student_id)
+
         if payload.actor_role == "ENTREPRISE":
             ensure_company_owns_offer(conn, auth["user_id"], payload.offer_id)
+            decision_column = "company_decision"
+        elif payload.actor_role == "ETUDIANT":
+            decision_column = "student_decision"
+        else:
+            raise HTTPException(status_code=400, detail={"message": "Seuls les etudiants et entreprises peuvent swiper."})
 
         _create_interaction_if_needed(conn, payload, now)
 
-        field = DECISION_FIELDS.get(payload.actor_role)
-        if not field:
-            raise HTTPException(status_code=400, detail={"message": "Seuls les etudiants et entreprises peuvent swiper."})
-
         conn.execute(
-            f"UPDATE application_match SET {field} = ?, updated_at = ? WHERE offer_id = ? AND student_id = ?",
+            f"UPDATE application_match SET {decision_column} = ?, updated_at = ? WHERE offer_id = ? AND student_id = ?",
             (payload.decision, now, payload.offer_id, payload.student_id),
         )
 

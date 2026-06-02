@@ -8,8 +8,9 @@ const REGISTER_FIELDS = [
   ["lastname", "Nom"],
   ["email", "Email"],
   ["bio", "Bio"],
-  ["avatarUrl", "URL photo de profil"],
 ];
+
+const MAX_AVATAR_SIZE = 1_500_000;
 
 export function LoginScreen({ setSession, setToast }) {
   const [mode, setMode] = useState("login");
@@ -26,6 +27,26 @@ export function LoginScreen({ setSession, setToast }) {
 
   function updateRegisterField(key, value) {
     setRegisterFields((current) => ({ ...current, [key]: value }));
+  }
+
+  function uploadAvatar(event) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      setToast("Veuillez choisir une image.");
+      return;
+    }
+
+    if (file.size > MAX_AVATAR_SIZE) {
+      setToast("L'image doit faire moins de 1.5 Mo.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => updateRegisterField("avatarUrl", reader.result);
+    reader.onerror = () => setToast("Impossible de charger l'image.");
+    reader.readAsDataURL(file);
   }
 
   async function login(event) {
@@ -137,6 +158,13 @@ export function LoginScreen({ setSession, setToast }) {
                   />
                 </label>
               ))}
+              <label>
+                Photo de profil
+                <input type="file" accept="image/*" onChange={uploadAvatar} />
+              </label>
+              {registerFields.avatarUrl && (
+                <img className="auth-avatar-preview" src={registerFields.avatarUrl} alt="Apercu du profil" />
+              )}
               <button className="primary-button" disabled={loading}>
                 {loading ? "Inscription..." : "Inscription"}
               </button>

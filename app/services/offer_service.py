@@ -31,6 +31,7 @@ def create_offer(payload: CreateOfferRequest, auth: dict[str, Any]) -> dict[str,
 
     company_id = auth["user_id"]
     skill_ids = sorted(set(payload.required_skill_ids))
+
     with get_connection() as conn:
         company = conn.execute("SELECT name, email, phone FROM company WHERE id = ?", (company_id,)).fetchone()
         if not company:
@@ -57,4 +58,9 @@ def create_offer(payload: CreateOfferRequest, auth: dict[str, Any]) -> dict[str,
             [(offer_id, skill_id) for skill_id in skill_ids],
         )
 
-    return {"offer_id": offer_id, "company_id": company_id, "company_name": company["name"], "title": payload.title}
+    return {
+        "offer_id": offer_id,
+        "company_id": company_id,
+        "company_name": company["name"],
+        "title": payload.title,
+    }
