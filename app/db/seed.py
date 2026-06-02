@@ -214,11 +214,12 @@ def seed_database(conn: sqlite3.Connection) -> None:
 
     conn.execute(
         """
-        INSERT INTO offer(id, company_name, title, description, contact_email, contact_phone)
-        VALUES (?, ?, ?, ?, ?, ?)
+        INSERT INTO offer(id, company_id, company_name, title, description, contact_email, contact_phone)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
         """,
         (
             5,
+            201,
             "Tech Solutions",
             "Developpeur Fullstack React/Node",
             "Recherche un alternant pour l'equipe produit.",
@@ -230,11 +231,12 @@ def seed_database(conn: sqlite3.Connection) -> None:
 
     conn.execute(
         """
-        INSERT INTO offer(id, company_name, title, description, contact_email, contact_phone)
-        VALUES (?, ?, ?, ?, ?, ?)
+        INSERT INTO offer(id, company_id, company_name, title, description, contact_email, contact_phone)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
         """,
         (
             6,
+            202,
             "Innovate Labs",
             "Ingénieur DevOps",
             "Recherche un profil DevOps pour automatisation cloud et pipelines.",
@@ -246,11 +248,12 @@ def seed_database(conn: sqlite3.Connection) -> None:
 
     conn.execute(
         """
-        INSERT INTO offer(id, company_name, title, description, contact_email, contact_phone)
-        VALUES (?, ?, ?, ?, ?, ?)
+        INSERT INTO offer(id, company_id, company_name, title, description, contact_email, contact_phone)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
         """,
         (
             7,
+            203,
             "Mobilio",
             "Designer / Développeur Mobile",
             "Recherche un profil mobile avec sens du design pour app native.",
@@ -262,11 +265,12 @@ def seed_database(conn: sqlite3.Connection) -> None:
 
     conn.execute(
         """
-        INSERT INTO offer(id, company_name, title, description, contact_email, contact_phone)
-        VALUES (?, ?, ?, ?, ?, ?)
+        INSERT INTO offer(id, company_id, company_name, title, description, contact_email, contact_phone)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
         """,
         (
             8,
+            204,
             "DataHive",
             "Analyste Data / SQL",
             "Recherche un profil data capable d'extraire et transformer de grandes tables SQL.",
@@ -278,11 +282,12 @@ def seed_database(conn: sqlite3.Connection) -> None:
 
     conn.execute(
         """
-        INSERT INTO offer(id, company_name, title, description, contact_email, contact_phone)
-        VALUES (?, ?, ?, ?, ?, ?)
+        INSERT INTO offer(id, company_id, company_name, title, description, contact_email, contact_phone)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
         """,
         (
             9,
+            205,
             "Creative Studio",
             "Designer Produit / UX",
             "Recherche un designer produit capable de construire des interfaces utilisateur engageantes.",
@@ -294,11 +299,12 @@ def seed_database(conn: sqlite3.Connection) -> None:
 
     conn.execute(
         """
-        INSERT INTO offer(id, company_name, title, description, contact_email, contact_phone)
-        VALUES (?, ?, ?, ?, ?, ?)
+        INSERT INTO offer(id, company_id, company_name, title, description, contact_email, contact_phone)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
         """,
         (
             10,
+            206,
             "CloudWorks",
             "Ingénieur Infrastructure Cloud",
             "Développement d'applications cloud avec déploiement conteneurisé.",

@@ -7,17 +7,28 @@ import { CompanySpace } from "./features/company/CompanySpace";
 import { StaffSpace } from "./features/staff/StaffSpace";
 import { StudentSpace } from "./features/student/StudentSpace";
 
+const SESSION_STORAGE_KEY = "hexagone-session";
+
+function loadSavedSession() {
+  const saved = localStorage.getItem(SESSION_STORAGE_KEY);
+  if (!saved) return null;
+
+  try {
+    return JSON.parse(saved);
+  } catch {
+    localStorage.removeItem(SESSION_STORAGE_KEY);
+    return null;
+  }
+}
+
 function App() {
-  const [session, setSession] = useState(() => {
-    const saved = localStorage.getItem("hexagone-session");
-    return saved ? JSON.parse(saved) : null;
-  });
+  const [session, setSession] = useState(loadSavedSession);
   const [view, setView] = useState("home");
   const [toast, setToast] = useState("");
 
   useEffect(() => {
-    if (session) localStorage.setItem("hexagone-session", JSON.stringify(session));
-    else localStorage.removeItem("hexagone-session");
+    if (session) localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(session));
+    else localStorage.removeItem(SESSION_STORAGE_KEY);
   }, [session]);
 
   const api = useMemo(() => createApi(session, setToast), [session]);

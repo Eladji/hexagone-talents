@@ -4,10 +4,15 @@ from typing import Any
 
 from fastapi import HTTPException
 
-from app.core.database import get_connection
-from app.core.database import row_to_dict
-from app.schemas.student import CreateProjectRequest, UpdateSkillsRequest, UpdateStudentProfileRequest
+from app.core.database import get_connection, row_to_dict
+from app.schemas.student import CreateProjectRequest, SkillWeightInput, UpdateSkillsRequest, UpdateStudentProfileRequest
 from app.services.guards import ensure_skills, ensure_student, ensure_student_owns_skills
+
+
+MAX_SKILLS = 5
+MIN_SKILL_WEIGHT = 1
+MAX_SKILL_WEIGHT = 100
+TOTAL_SKILL_BUDGET = 100
 
 
 def get_student_profile(student_id: int) -> dict[str, Any]:
@@ -82,23 +87,7 @@ def update_student_profile(payload: UpdateStudentProfileRequest) -> dict[str, An
 
 
 def update_student_skills(payload: UpdateSkillsRequest) -> dict[str, Any]:
-    if len(payload.skills) > 5:
-        raise HTTPException(
-            status_code=400,
-            detail={"message": "Erreur Validation : Vous ne pouvez pas selectionner plus de 5 competences."},
-        )
-    if any(item.weight <= 0 or item.weight > 100 for item in payload.skills):
-        raise HTTPException(
-            status_code=400,
-            detail={"message": "Chaque competence sauvegardee doit avoir entre 1 et 100 points."},
-        )
-    if sum(item.weight for item in payload.skills) != 100:
-        raise HTTPException(
-            status_code=400,
-            detail={"message": "Erreur Validation : Le budget total de points doit etre strictement egal a 100."},
-        )
-    if len({item.skill_id for item in payload.skills}) != len(payload.skills):
-        raise HTTPException(status_code=400, detail={"message": "Une competence ne peut pas etre selectionnee deux fois."})
+    _validate_skill_budget(payload.skills)
 
     with get_connection() as conn:
         ensure_student(conn, payload.student_id)
@@ -136,3 +125,39 @@ def create_project(payload: CreateProjectRequest) -> dict[str, Any]:
         "title": payload.title,
         "associated_skill_ids": skill_ids,
     }
+
+
+def _validate_skill_budget(skills: list[SkillWeightInput]) -> None:
+    if len(skills) > MAX_SKILLS:
+        raise HTTPException(
+            status_code=400,
+            detail={"message": f"Erreur Validation : Vous ne pouvez pas selectionner plus de {MAX_SKILLS} competences."},
+        )
+
+    if any(item.weight < MIN_SKILL_WEIGHT or item.weight > MAX_SKILL_WEIGHT for item in skills):
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "message": (
+                    "Chaque competence sauvegardee doit avoir entre "
+                    f"{MIN_SKILL_WEIGHT} et {MAX_SKILL_WEIGHT} points."
+                )
+            },
+        )
+
+    if sum(item.weight for item in skills) != TOTAL_SKILL_BUDGET:
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "message": (
+                    "Erreur Validation : Le budget total de points doit etre strictement egal "
+                    f"a {TOTAL_SKILL_BUDGET}."
+                )
+            },
+        )
+
+    if len({item.skill_id for item in skills}) != len(skills):
+        raise HTTPException(
+            status_code=400,
+            detail={"message": "Une competence ne peut pas etre selectionnee deux fois."},
+        )

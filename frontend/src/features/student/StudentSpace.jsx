@@ -262,6 +262,53 @@ function ProfileEditor({ api, session, skills, profile, applySavedSkills, refres
     }));
   }
 
+  async function saveSkills() {
+    const result = await api.safe(null, () =>
+      api.request("/student/skills", {
+        method: "PUT",
+        body: JSON.stringify({ student_id: session.user_id, skills: selected }),
+      })
+    );
+    if (!result) return;
+
+    const savedSkills = selectedWithNames();
+    applySavedSkills(savedSkills);
+    setProject((current) => ({
+      ...current,
+      associated_skill_ids: savedSkills.some((skill) => skill.id === current.associated_skill_ids[0])
+        ? current.associated_skill_ids
+        : [savedSkills[0].id],
+    }));
+    refreshProfile();
+  }
+
+  async function createProject() {
+    const created = await api.safe(null, () =>
+      api.request("/student/projects", {
+        method: "POST",
+        body: JSON.stringify({ ...project, student_id: session.user_id }),
+      })
+    );
+    if (!created) return;
+
+    setProject({
+      title: "",
+      description: "",
+      associated_skill_ids: [projectSkillOptions[0].id || projectSkillOptions[0].skill_id],
+    });
+    refreshProfile();
+  }
+
+  async function suggestSkill() {
+    const result = await api.safe(null, () =>
+      api.request("/skills/suggest", {
+        method: "POST",
+        body: JSON.stringify({ student_id: session.user_id, skill_name: suggestion }),
+      })
+    );
+    if (result) setSuggestion("");
+  }
+
   return (
     <div className="editor-grid">
       <Panel title="Profil personnel">
@@ -327,27 +374,7 @@ function ProfileEditor({ api, session, skills, profile, applySavedSkills, refres
           <button
             className="primary-button"
             disabled={!canSaveSkills}
-            onClick={() => {
-              api
-                .safe(null, () =>
-                  api.request("/student/skills", {
-                    method: "PUT",
-                    body: JSON.stringify({ student_id: session.user_id, skills: selected }),
-                  })
-                )
-                .then((result) => {
-                  if (!result) return;
-                  const savedSkills = selectedWithNames();
-                  applySavedSkills(savedSkills);
-                  setProject((current) => ({
-                    ...current,
-                    associated_skill_ids: savedSkills.some((skill) => skill.id === current.associated_skill_ids[0])
-                      ? current.associated_skill_ids
-                      : [savedSkills[0].id],
-                  }));
-                  refreshProfile();
-                });
-            }}
+            onClick={saveSkills}
           >
             Sauver
           </button>
@@ -375,20 +402,7 @@ function ProfileEditor({ api, session, skills, profile, applySavedSkills, refres
         <button
           className="primary-button"
           disabled={!projectSkillOptions.length || !project.title.trim() || !project.description.trim()}
-          onClick={() => {
-            api
-              .safe(null, () =>
-                api.request("/student/projects", {
-                  method: "POST",
-                  body: JSON.stringify({ ...project, student_id: session.user_id }),
-                })
-              )
-              .then((created) => {
-                if (!created) return;
-                setProject({ title: "", description: "", associated_skill_ids: [projectSkillOptions[0].id || projectSkillOptions[0].skill_id] });
-                refreshProfile();
-              });
-          }}
+          onClick={createProject}
         >
           Publier le projet
         </button>
@@ -397,16 +411,7 @@ function ProfileEditor({ api, session, skills, profile, applySavedSkills, refres
 
       <Panel title="Suggester une competence">
         <input maxLength="25" placeholder="Rust" value={suggestion} onChange={(event) => setSuggestion(event.target.value)} />
-        <button
-          onClick={() =>
-            api.safe(null, () =>
-              api.request("/skills/suggest", {
-                method: "POST",
-                body: JSON.stringify({ student_id: session.user_id, skill_name: suggestion }),
-              })
-            )
-          }
-        >
+        <button onClick={suggestSkill}>
           Envoyer au staff
         </button>
       </Panel>

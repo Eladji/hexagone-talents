@@ -67,11 +67,13 @@ CREATE TABLE IF NOT EXISTS project_skill (
 
 CREATE TABLE IF NOT EXISTS offer (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
+    company_id INTEGER NOT NULL,
     company_name TEXT NOT NULL,
     title TEXT NOT NULL,
     description TEXT NOT NULL,
     contact_email TEXT DEFAULT '',
-    contact_phone TEXT DEFAULT ''
+    contact_phone TEXT DEFAULT '',
+    FOREIGN KEY (company_id) REFERENCES company(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS offer_skill (

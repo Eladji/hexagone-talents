@@ -20,7 +20,7 @@ def list_messages(match_id: int) -> list[dict[str, Any]]:
 
 def create_message(match_id: int, payload: CreateMessageRequest, auth: dict[str, Any]) -> dict[str, Any]:
     now = datetime.now(timezone.utc).isoformat()
-    sender_role = auth["role"]  # Use authenticated role, not client-provided
+    sender_role = auth["role"]
     with get_connection() as conn:
         ensure_match(conn, match_id)
         cursor = conn.execute(

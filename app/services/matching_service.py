@@ -8,12 +8,18 @@ from fastapi import HTTPException
 
 from app.core.database import get_connection
 from app.schemas.matching import SwipeRequest
-from app.services.guards import ensure_offer, ensure_student
+from app.services.guards import ensure_company_owns_offer, ensure_offer, ensure_student
 
 
-def suggested_students(offer_id: int) -> dict[str, list[dict[str, Any]]]:
+DECISION_FIELDS = {
+    "ENTREPRISE": "company_decision",
+    "ETUDIANT": "student_decision",
+}
+
+
+def suggested_students(offer_id: int, auth: dict[str, Any]) -> dict[str, list[dict[str, Any]]]:
     with get_connection() as conn:
-        ensure_offer(conn, offer_id)
+        ensure_company_owns_offer(conn, auth["user_id"], offer_id)
         offer_skills = {
             row["skill_id"] for row in conn.execute("SELECT skill_id FROM offer_skill WHERE offer_id = ?", (offer_id,))
         }
@@ -42,9 +48,15 @@ def submit_swipe(payload: SwipeRequest, auth: dict[str, Any]) -> dict[str, Any]:
     with get_connection() as conn:
         ensure_offer(conn, payload.offer_id)
         ensure_student(conn, payload.student_id)
+        if payload.actor_role == "ENTREPRISE":
+            ensure_company_owns_offer(conn, auth["user_id"], payload.offer_id)
+
         _create_interaction_if_needed(conn, payload, now)
 
-        field = "company_decision" if payload.actor_role == "ENTREPRISE" else "student_decision"
+        field = DECISION_FIELDS.get(payload.actor_role)
+        if not field:
+            raise HTTPException(status_code=400, detail={"message": "Seuls les etudiants et entreprises peuvent swiper."})
+
         conn.execute(
             f"UPDATE application_match SET {field} = ?, updated_at = ? WHERE offer_id = ? AND student_id = ?",
             (payload.decision, now, payload.offer_id, payload.student_id),
@@ -99,9 +111,9 @@ def student_matches(student_id: int) -> list[dict[str, Any]]:
     return [dict(row) for row in rows]
 
 
-def offer_matches(offer_id: int) -> list[dict[str, Any]]:
+def offer_matches(offer_id: int, auth: dict[str, Any]) -> list[dict[str, Any]]:
     with get_connection() as conn:
-        ensure_offer(conn, offer_id)
+        ensure_company_owns_offer(conn, auth["user_id"], offer_id)
         rows = conn.execute(
             """
             SELECT am.id AS match_id, s.id AS student_id, s.firstname, s.lastname, s.email, s.phone, s.avatar_url
@@ -158,7 +170,7 @@ def _build_candidate_card(conn: sqlite3.Connection, student: sqlite3.Row, offer_
 
     matching_rows = [row for row in skill_rows if row["id"] in offer_skill_ids]
     base_score = sum(row["weight"] for row in matching_rows)
-    project_malus = 10 * len([row for row in matching_rows if row["id"] not in project_skill_ids])
+    project_malus = 10 * sum(row["id"] not in project_skill_ids for row in matching_rows)
 
     return {
         "student_id": student["id"],

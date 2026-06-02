@@ -16,6 +16,23 @@ def ensure_offer(conn: sqlite3.Connection, offer_id: int) -> None:
         raise HTTPException(status_code=404, detail={"message": "Offre introuvable."})
 
 
+def ensure_company(conn: sqlite3.Connection, company_id: int) -> None:
+    if not conn.execute("SELECT 1 FROM company WHERE id = ?", (company_id,)).fetchone():
+        raise HTTPException(status_code=404, detail={"message": "Entreprise introuvable."})
+
+
+def ensure_company_owns_offer(conn: sqlite3.Connection, company_id: int, offer_id: int) -> None:
+    offer = conn.execute("SELECT company_id FROM offer WHERE id = ?", (offer_id,)).fetchone()
+    if not offer:
+        raise HTTPException(status_code=404, detail={"message": "Offre introuvable."})
+
+    if offer["company_id"] != company_id:
+        raise HTTPException(
+            status_code=403,
+            detail={"message": "Cette entreprise ne peut utiliser que ses propres offres."},
+        )
+
+
 def ensure_match(conn: sqlite3.Connection, match_id: int) -> None:
     query = "SELECT 1 FROM application_match WHERE id = ? AND is_match = 1"
     if not conn.execute(query, (match_id,)).fetchone():

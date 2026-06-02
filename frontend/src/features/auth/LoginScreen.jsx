@@ -3,18 +3,30 @@ import { useState } from "react";
 import { loginRequest, registerRequest } from "../../api/client";
 import { demoAccounts } from "../../data/demoData";
 
+const REGISTER_FIELDS = [
+  ["firstname", "Prénom"],
+  ["lastname", "Nom"],
+  ["email", "Email"],
+  ["bio", "Bio"],
+  ["avatarUrl", "URL photo de profil"],
+];
+
 export function LoginScreen({ setSession, setToast }) {
   const [mode, setMode] = useState("login");
   const [username, setUsername] = useState("antoine.dev");
   const [password, setPassword] = useState("password123");
-  const [firstname, setFirstname] = useState("Antoine");
-  const [lastname, setLastname] = useState("Dupont");
-  const [email, setEmail] = useState("antoine@example.com");
-  const [bio, setBio] = useState("Passionne par l'architecture logicielle.");
-  const [avatarUrl, setAvatarUrl] = useState(
-    "https://ui-avatars.com/api/?name=Antoine+Dupont&background=4969b2&color=ffffff"
-  );
+  const [registerFields, setRegisterFields] = useState({
+    firstname: "Antoine",
+    lastname: "Dupont",
+    email: "antoine@example.com",
+    bio: "Passionne par l'architecture logicielle.",
+    avatarUrl: "https://ui-avatars.com/api/?name=Antoine+Dupont&background=4969b2&color=ffffff",
+  });
   const [loading, setLoading] = useState(false);
+
+  function updateRegisterField(key, value) {
+    setRegisterFields((current) => ({ ...current, [key]: value }));
+  }
 
   async function login(event) {
     event.preventDefault();
@@ -36,12 +48,12 @@ export function LoginScreen({ setSession, setToast }) {
       const data = await registerRequest({
         username,
         password,
-        firstname,
-        lastname,
-        email,
-        bio,
+        firstname: registerFields.firstname,
+        lastname: registerFields.lastname,
+        email: registerFields.email,
+        bio: registerFields.bio,
         phone: "0600000000",
-        avatar_url: avatarUrl,
+        avatar_url: registerFields.avatarUrl,
       });
       setSession({ ...data, username });
     } catch (error) {
@@ -58,7 +70,7 @@ export function LoginScreen({ setSession, setToast }) {
           <button className={mode === "login" ? "active" : ""} onClick={() => setMode("login")}>
             CONNEXION
           </button>
-          <button className={mode === "register" ? "active" : ""} onClick={() => setMode("register")}> 
+          <button className={mode === "register" ? "active" : ""} onClick={() => setMode("register")}>
             INSCRIPTION
           </button>
         </div>
@@ -69,11 +81,20 @@ export function LoginScreen({ setSession, setToast }) {
             <form onSubmit={login} className="stack">
               <label>
                 Identifiants
-                <input placeholder="Saisissez texte" value={username} onChange={(event) => setUsername(event.target.value)} />
+                <input
+                  placeholder="Saisissez texte"
+                  value={username}
+                  onChange={(event) => setUsername(event.target.value)}
+                />
               </label>
               <label>
                 Mot de passe
-                <input type="password" placeholder="Saisissez texte" value={password} onChange={(event) => setPassword(event.target.value)} />
+                <input
+                  type="password"
+                  placeholder="Saisissez texte"
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value)}
+                />
               </label>
               <button className="primary-button" disabled={loading}>
                 {loading ? "Connexion..." : "Connexion"}
@@ -81,8 +102,8 @@ export function LoginScreen({ setSession, setToast }) {
             </form>
             <div className="demo-grid">
               {demoAccounts.map((account) => (
-                <button 
-                  key={account.username} 
+                <button
+                  key={account.username}
                   onClick={() => {
                     setUsername(account.username);
                     setPassword("password123");
@@ -107,31 +128,20 @@ export function LoginScreen({ setSession, setToast }) {
                 Mot de passe
                 <input type="password" value={password} onChange={(event) => setPassword(event.target.value)} />
               </label>
-              <label>
-                Prénom
-                <input value={firstname} onChange={(event) => setFirstname(event.target.value)} />
-              </label>
-              <label>
-                Nom
-                <input value={lastname} onChange={(event) => setLastname(event.target.value)} />
-              </label>
-              <label>
-                Email
-                <input value={email} onChange={(event) => setEmail(event.target.value)} />
-              </label>
-              <label>
-                Bio
-                <input value={bio} onChange={(event) => setBio(event.target.value)} />
-              </label>
-              <label>
-                URL photo de profil
-                <input value={avatarUrl} onChange={(event) => setAvatarUrl(event.target.value)} />
-              </label>
+              {REGISTER_FIELDS.map(([key, label]) => (
+                <label key={key}>
+                  {label}
+                  <input
+                    value={registerFields[key]}
+                    onChange={(event) => updateRegisterField(key, event.target.value)}
+                  />
+                </label>
+              ))}
               <button className="primary-button" disabled={loading}>
                 {loading ? "Inscription..." : "Inscription"}
               </button>
             </form>
-            <button className="danger-button" onClick={() => setMode("login")} style={{ width: "100%" }}>
+            <button className="danger-button full-width-button" onClick={() => setMode("login")}>
               Retour
             </button>
           </>

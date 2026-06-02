@@ -1,5 +1,15 @@
 export const API_BASE = (import.meta.env.VITE_API_BASE_URL || "/api").replace(/\/$/, "");
 
+function getErrorMessage(data, fallback) {
+  const message = data?.message || data?.detail?.message || data?.detail || fallback;
+  return typeof message === "string" ? message : JSON.stringify(message);
+}
+
+async function readJsonResponse(response) {
+  const text = await response.text();
+  return text ? JSON.parse(text) : null;
+}
+
 export function createApi(session, setToast) {
   async function request(path, options = {}) {
     const response = await fetch(`${API_BASE}${path}`, {
@@ -10,11 +20,9 @@ export function createApi(session, setToast) {
         ...options.headers,
       },
     });
-    const text = await response.text();
-    const data = text ? JSON.parse(text) : null;
+    const data = await readJsonResponse(response);
     if (!response.ok) {
-      const message = data?.message || data?.detail?.message || data?.detail || "Erreur API";
-      throw new Error(typeof message === "string" ? message : JSON.stringify(message));
+      throw new Error(getErrorMessage(data, "Erreur API"));
     }
     return data;
   }
@@ -38,8 +46,8 @@ export async function loginRequest(username, password) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ username, password }),
   });
-  const data = await response.json();
-  if (!response.ok) throw new Error(data?.detail?.message || data?.message || "Connexion impossible");
+  const data = await readJsonResponse(response);
+  if (!response.ok) throw new Error(getErrorMessage(data, "Connexion impossible"));
   return data;
 }
 
@@ -49,7 +57,7 @@ export async function registerRequest(payload) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
-  const data = await response.json();
-  if (!response.ok) throw new Error(data?.detail?.message || data?.message || "Inscription impossible");
+  const data = await readJsonResponse(response);
+  if (!response.ok) throw new Error(getErrorMessage(data, "Inscription impossible"));
   return data;
 }

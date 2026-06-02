@@ -138,7 +138,7 @@ function OfferCreator({ api, skills, setOffers, setActiveOfferId, setView }) {
       })
     );
     if (created) {
-      const offer = { ...draft, offer_id: created.offer_id, id: created.offer_id };
+      const offer = { ...draft, ...created, id: created.offer_id };
       setOffers((current) => [offer, ...current]);
       setActiveOfferId(created.offer_id);
       setView("swipe");
