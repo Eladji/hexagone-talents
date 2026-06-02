@@ -4,6 +4,8 @@ import { HeroMetric, OfferRow, Panel } from "../../components/ui";
 import { normalizeSkills, seedOffers, seedSkills } from "../../data/demoData";
 import { ChatPanel } from "../chat/ChatPanel";
 
+const MAX_AVATAR_SIZE = 1_500_000;
+
 export function StudentSpace({ api, session, view, setView }) {
   const [skills, setSkills] = useState(seedSkills);
   const [profile, setProfile] = useState(null);
@@ -181,6 +183,7 @@ function ProfileEditor({ api, session, skills, profile, applySavedSkills, refres
   ]);
   const [project, setProject] = useState({ title: "", description: "", associated_skill_ids: [1] });
   const [suggestion, setSuggestion] = useState("");
+  const [profileError, setProfileError] = useState("");
   const [savingProfile, setSavingProfile] = useState(false);
   const total = selected.reduce((sum, skill) => sum + Number(skill.weight || 0), 0);
   const profileSkills = profile?.skills || [];
@@ -216,6 +219,27 @@ function ProfileEditor({ api, session, skills, profile, applySavedSkills, refres
 
   function updateProfileField(key, value) {
     setProfileFields((current) => ({ ...current, [key]: value }));
+  }
+
+  function uploadProfilePhoto(event) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    setProfileError("");
+
+    if (!file.type.startsWith("image/")) {
+      setProfileError("Veuillez choisir une image.");
+      return;
+    }
+
+    if (file.size > MAX_AVATAR_SIZE) {
+      setProfileError("L'image doit faire moins de 1.5 Mo.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => updateProfileField("avatar_url", reader.result);
+    reader.onerror = () => setProfileError("Impossible de charger l'image.");
+    reader.readAsDataURL(file);
   }
 
   async function saveProfile() {
@@ -332,6 +356,21 @@ function ProfileEditor({ api, session, skills, profile, applySavedSkills, refres
           Téléphone
           <input value={profileFields.phone} onChange={(event) => updateProfileField("phone", event.target.value)} />
         </label>
+        <div className="profile-photo-editor">
+          {profileFields.avatar_url ? (
+            <img className="profile-photo-preview" src={profileFields.avatar_url} alt="Apercu du profil" />
+          ) : (
+            <div className="profile-photo-preview placeholder">H</div>
+          )}
+          <label>
+            Photo de profil
+            <input type="file" accept="image/*" onChange={uploadProfilePhoto} />
+          </label>
+          <button className="danger-button" onClick={() => updateProfileField("avatar_url", "")}>
+            Retirer la photo
+          </button>
+        </div>
+        {profileError && <p className="muted">{profileError}</p>}
         <label>
           URL photo de profil
           <input value={profileFields.avatar_url} onChange={(event) => updateProfileField("avatar_url", event.target.value)} />
