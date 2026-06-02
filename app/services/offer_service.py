@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import datetime
 from typing import Any
 
 from fastapi import HTTPException
@@ -10,17 +11,25 @@ from app.services.guards import ensure_company, ensure_skills
 
 
 def list_offers(auth: dict[str, Any]) -> list[dict[str, Any]]:
+    return _list_offers_by_status(auth, "ACTIVE")
+
+
+def list_offer_history(auth: dict[str, Any]) -> list[dict[str, Any]]:
+    return _list_offers_by_status(auth, "ARCHIVED")
+
+
+def _list_offers_by_status(auth: dict[str, Any], status: str) -> list[dict[str, Any]]:
     company_id = auth["user_id"]
     with get_connection() as conn:
         ensure_company(conn, company_id)
         rows = conn.execute(
             """
-            SELECT id, company_id, company_name, title, description, contact_email, contact_phone
+            SELECT id, company_id, company_name, title, description, contact_email, contact_phone, status, created_at, closed_at
             FROM offer
-            WHERE company_id = ?
+            WHERE company_id = ? AND status = ?
             ORDER BY id DESC
             """,
-            (company_id,),
+            (company_id, status),
         ).fetchall()
     return [dict(row) for row in rows]
 
@@ -40,8 +49,8 @@ def create_offer(payload: CreateOfferRequest, auth: dict[str, Any]) -> dict[str,
         ensure_skills(conn, skill_ids, approved_only=True)
         cursor = conn.execute(
             """
-            INSERT INTO offer(company_id, company_name, title, description, contact_email, contact_phone)
-            VALUES (?, ?, ?, ?, ?, ?)
+            INSERT INTO offer(company_id, company_name, title, description, contact_email, contact_phone, status, created_at, closed_at)
+            VALUES (?, ?, ?, ?, ?, ?, 'ACTIVE', ?, '')
             """,
             (
                 company_id,
@@ -50,6 +59,7 @@ def create_offer(payload: CreateOfferRequest, auth: dict[str, Any]) -> dict[str,
                 payload.description,
                 payload.contact_email or company["email"] or "",
                 payload.contact_phone or company["phone"] or "",
+                datetime.utcnow().isoformat(timespec="seconds"),
             ),
         )
         offer_id = cursor.lastrowid
@@ -63,4 +73,6 @@ def create_offer(payload: CreateOfferRequest, auth: dict[str, Any]) -> dict[str,
         "company_id": company_id,
         "company_name": company["name"],
         "title": payload.title,
+        "description": payload.description,
+        "status": "ACTIVE",
     }

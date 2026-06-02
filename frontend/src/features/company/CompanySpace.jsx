@@ -1,12 +1,43 @@
 import { useEffect, useState } from "react";
 
 import { HeroMetric, OfferRow, Panel } from "../../components/ui";
-import { normalizeSkills, seedCandidates, seedOffers, seedSkills } from "../../data/demoData";
+import { normalizeSkills, seedCandidates, seedOfferHistory, seedOffers, seedSkills } from "../../data/demoData";
 import { ChatPanel } from "../chat/ChatPanel";
+
+function getOfferId(offer) {
+  return offer.id || offer.offer_id;
+}
+
+function getOfferKey(offer) {
+  return getOfferId(offer) || `${offer.company_name}-${offer.title || offer.offer_title}`;
+}
+
+function getOfferTitleKey(offer) {
+  return `${offer.company_name || ""}-${offer.title || offer.offer_title || ""}`.trim().toLowerCase();
+}
+
+function uniqueOffers(offers) {
+  const seenIds = new Set();
+  const seenTitles = new Set();
+  return offers.filter((offer) => {
+    const id = getOfferId(offer);
+    const titleKey = getOfferTitleKey(offer);
+    if ((id && seenIds.has(id)) || seenTitles.has(titleKey)) return false;
+    if (id) seenIds.add(id);
+    seenTitles.add(titleKey);
+    return true;
+  });
+}
+
+function formatArchiveMeta(offer) {
+  if (!offer.closed_at) return "Ancienne offre";
+  return `Archivee le ${new Date(offer.closed_at).toLocaleDateString("fr-FR")}`;
+}
 
 export function CompanySpace({ api, session, view, setView }) {
   const [skills, setSkills] = useState(seedSkills);
   const [offers, setOffers] = useState(seedOffers);
+  const [offerHistory, setOfferHistory] = useState(seedOfferHistory);
   const [activeOfferId, setActiveOfferId] = useState(seedOffers[0]?.id || 5);
   const [candidates, setCandidates] = useState(seedCandidates);
   const [matches, setMatches] = useState([]);
@@ -17,9 +48,16 @@ export function CompanySpace({ api, session, view, setView }) {
 
   useEffect(() => {
     api.safe(seedOffers, () => api.request("/offers")).then((loadedOffers) => {
-      if (!loadedOffers.length) return;
-      setOffers(loadedOffers);
-      setActiveOfferId((current) => (loadedOffers.some((offer) => (offer.id || offer.offer_id) === current) ? current : loadedOffers[0].id || loadedOffers[0].offer_id));
+      const activeOffers = uniqueOffers(loadedOffers.filter((offer) => offer.status !== "ARCHIVED"));
+      if (!activeOffers.length) return;
+      setOffers(activeOffers);
+      setActiveOfferId((current) => (activeOffers.some((offer) => getOfferId(offer) === current) ? current : getOfferId(activeOffers[0])));
+    });
+  }, [api]);
+
+  useEffect(() => {
+    api.safe(seedOfferHistory, () => api.request("/offers/history")).then((loadedOffers) => {
+      setOfferHistory(uniqueOffers(loadedOffers));
     });
   }, [api]);
 
@@ -29,7 +67,7 @@ export function CompanySpace({ api, session, view, setView }) {
     api.safe([], () => api.request(`/offers/${activeOfferId}/matches`)).then(setMatches);
   }, [api, activeOfferId]);
 
-  const activeOffer = offers.find((offer) => offer.id === activeOfferId || offer.offer_id === activeOfferId) || offers[0];
+  const activeOffer = offers.find((offer) => getOfferId(offer) === activeOfferId) || offers[0];
 
   if (view === "list") {
     return (
@@ -58,7 +96,7 @@ export function CompanySpace({ api, session, view, setView }) {
     );
   }
 
-  if (view === "profile") return <CompanyProfile offers={offers} skills={skills} />;
+  if (view === "profile") return <CompanyProfile offers={offers} offerHistory={offerHistory} skills={skills} />;
   if (view === "chat") return <ChatPanel api={api} matches={matches} role={session.role} />;
 
   return (
@@ -75,16 +113,29 @@ export function CompanySpace({ api, session, view, setView }) {
       <Panel title="Offres publiees">
         {offers.map((offer) => (
           <OfferRow
-            key={offer.id || offer.offer_id}
+            key={getOfferKey(offer)}
             offer={offer}
-            active={(offer.id || offer.offer_id) === activeOfferId}
+            active={getOfferId(offer) === activeOfferId}
             actionLabel="Voir"
             onAction={() => {
-              setActiveOfferId(offer.id || offer.offer_id);
+              setActiveOfferId(getOfferId(offer));
               setView("swipe");
             }}
           />
         ))}
+      </Panel>
+      <Panel title="Historique anciennes offres">
+        {offerHistory.length === 0 ? (
+          <p className="muted">Aucune ancienne offre pour l'instant.</p>
+        ) : (
+          offerHistory.map((offer) => (
+            <OfferRow
+              key={getOfferKey(offer)}
+              offer={offer}
+              meta={formatArchiveMeta(offer)}
+            />
+          ))
+        )}
       </Panel>
       <HeroMetric title="Candidats disponibles" value={candidates.length} text="Changez d'offre a tout moment pour rafraichir la file." />
     </div>
@@ -98,7 +149,7 @@ function OfferSelector({ offers, activeOfferId, onSelect }) {
         Offre
         <select value={activeOfferId} onChange={(event) => onSelect(Number(event.target.value))}>
           {offers.map((offer) => (
-            <option key={offer.id || offer.offer_id} value={offer.id || offer.offer_id}>
+            <option key={getOfferKey(offer)} value={getOfferId(offer)}>
               {offer.company_name} - {offer.title || offer.offer_title}
             </option>
           ))}
@@ -139,7 +190,7 @@ function OfferCreator({ api, skills, setOffers, setActiveOfferId, setView }) {
     );
     if (created) {
       const offer = { ...draft, ...created, id: created.offer_id };
-      setOffers((current) => [offer, ...current]);
+      setOffers((current) => uniqueOffers([offer, ...current]));
       setActiveOfferId(created.offer_id);
       setView("swipe");
     }
@@ -174,7 +225,7 @@ function OfferCreator({ api, skills, setOffers, setActiveOfferId, setView }) {
 }
 
 function CandidatesList({ api, offers, activeOfferId, setActiveOfferId, candidates, setCandidates, setView }) {
-  const activeOffer = offers.find((offer) => offer.id === activeOfferId || offer.offer_id === activeOfferId) || offers[0];
+  const activeOffer = offers.find((offer) => getOfferId(offer) === activeOfferId) || offers[0];
 
   async function decide(candidate, decision) {
     await api.safe(null, () =>
@@ -223,7 +274,7 @@ function CandidatesList({ api, offers, activeOfferId, setActiveOfferId, candidat
 
 function SwipeDeck({ api, offers, activeOfferId, setActiveOfferId, candidates, setCandidates }) {
   const candidate = candidates[0];
-  const activeOffer = offers.find((offer) => offer.id === activeOfferId || offer.offer_id === activeOfferId) || offers[0];
+  const activeOffer = offers.find((offer) => getOfferId(offer) === activeOfferId) || offers[0];
 
   async function decide(decision) {
     if (!candidate) return;
@@ -313,12 +364,12 @@ function CandidateSummary({ candidate }) {
   );
 }
 
-function CompanyProfile({ offers, skills }) {
+function CompanyProfile({ offers, offerHistory, skills }) {
   return (
     <div className="phone-panel profile-card">
       <div className="avatar-block">TS</div>
       <h2>Tech Solutions</h2>
-      <p>{offers.length} offre(s) actives. Competences suivies: {skills.map((skill) => skill.name).join(", ")}.</p>
+      <p>{offers.length} offre(s) actives, {offerHistory.length} ancienne(s) offre(s). Competences suivies: {skills.map((skill) => skill.name).join(", ")}.</p>
       <div className="chip-row">
         <span>Produit</span>
         <span>Alternance</span>

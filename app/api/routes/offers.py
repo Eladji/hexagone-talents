@@ -16,6 +16,13 @@ def list_offers(
     return offer_service.list_offers(auth)
 
 
+@router.get("/history")
+def list_offer_history(
+    auth: dict[str, Any] = Depends(require_role("ENTREPRISE")),
+) -> list[dict[str, Any]]:
+    return offer_service.list_offer_history(auth)
+
+
 @router.post("", status_code=201)
 def create_offer(
     payload: CreateOfferRequest,

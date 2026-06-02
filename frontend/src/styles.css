@@ -418,11 +418,17 @@ label {
 }
 
 .offer-row span,
-.offer-row p {
+.offer-row p,
+.offer-row small {
   font-size: 11px;
   color: #333;
   margin: 2px 0 0;
   display: block;
+}
+
+.offer-row small {
+  color: var(--text-muted);
+  margin-top: 6px;
 }
 
 .offer-row button,

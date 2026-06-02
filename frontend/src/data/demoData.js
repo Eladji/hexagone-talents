@@ -30,7 +30,47 @@ export const seedOffers = [
     company_name: "Tech Solutions",
     title: "Developpeur Fullstack React/Node",
     description: "Recherche un alternant pour l'equipe produit.",
+    status: "ACTIVE",
     required_skill_ids: [1, 2],
+  },
+  {
+    id: 14,
+    company_name: "Tech Solutions",
+    title: "Frontend React TypeScript",
+    description: "Renfort produit pour creer des composants fiables et maintenir le design system.",
+    status: "ACTIVE",
+    required_skill_ids: [1, 3],
+  },
+  {
+    id: 15,
+    company_name: "Tech Solutions",
+    title: "Backend Node.js API",
+    description: "Mission API REST avec authentification, tests et integration continue.",
+    status: "ACTIVE",
+    required_skill_ids: [2, 3],
+  },
+];
+
+export const seedOfferHistory = [
+  {
+    id: 101,
+    company_name: "Tech Solutions",
+    title: "Stage QA Automatisation",
+    description: "Ancienne campagne de tests automatises pour stabiliser les parcours critiques.",
+    status: "ARCHIVED",
+    created_at: "2026-02-12T09:30:00",
+    closed_at: "2026-04-18T17:00:00",
+    required_skill_ids: [4, 5],
+  },
+  {
+    id: 102,
+    company_name: "Tech Solutions",
+    title: "Integrateur Web Junior",
+    description: "Ancienne offre orientee integration responsive et correction UI.",
+    status: "ARCHIVED",
+    created_at: "2026-01-08T11:00:00",
+    closed_at: "2026-03-21T16:30:00",
+    required_skill_ids: [1, 8],
   },
 ];
 

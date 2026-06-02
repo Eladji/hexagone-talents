@@ -17,15 +17,16 @@ export function HeroMetric({ title, value, text }) {
   );
 }
 
-export function OfferRow({ offer, actionLabel, onAction, active }) {
+export function OfferRow({ offer, actionLabel, onAction, active, meta }) {
   return (
     <article className={`offer-row ${active ? "active" : ""}`}>
       <div>
         <strong>{offer.offer_title || offer.title}</strong>
         <span>{offer.company_name}</span>
         <p>{offer.description}</p>
+        {meta && <small>{meta}</small>}
       </div>
-      <button onClick={onAction}>{actionLabel}</button>
+      {actionLabel && <button onClick={onAction}>{actionLabel}</button>}
     </article>
   );
 }

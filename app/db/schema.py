@@ -73,6 +73,9 @@ CREATE TABLE IF NOT EXISTS offer (
     description TEXT NOT NULL,
     contact_email TEXT DEFAULT '',
     contact_phone TEXT DEFAULT '',
+    status TEXT NOT NULL DEFAULT 'ACTIVE' CHECK(status IN ('ACTIVE', 'ARCHIVED')),
+    created_at TEXT DEFAULT '',
+    closed_at TEXT DEFAULT '',
     FOREIGN KEY (company_id) REFERENCES company(id) ON DELETE CASCADE
 );
 
