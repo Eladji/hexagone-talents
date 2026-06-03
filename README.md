@@ -18,7 +18,7 @@ python -m app.run_backend --reset-db --reload --port 8080
 ## On Windows on cmd
 ```bash
 python -m venv .venv
-venv/Scripts/activate.bat
+.venv\Scripts\activate.bat
 pip install -r requirements.txt
 python -m app.run_backend --reset-db --reload --port 8080
 ```
