@@ -4,13 +4,13 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.router import api_router
-from app.core.config import API_PREFIX, APP_NAME, APP_VERSION, CORS_ORIGINS
+from app.core.config import API_PREFIX, APP_NAME, APP_VERSION, CORS_ORIGINS, RESET_DB_ON_STARTUP
 from app.db.init_db import init_db
 
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
-    init_db()
+    init_db(reset=RESET_DB_ON_STARTUP)
     yield
 
 

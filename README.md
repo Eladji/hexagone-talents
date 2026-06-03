@@ -13,13 +13,21 @@ messages.
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-uvicorn app.main:app --reload --port 8080
+python -m app.run_backend --reset-db --reload --port 8080
 ```
 
 The API is exposed under `http://localhost:8080/api`.
 
-The demo database is refreshed automatically at backend startup from
-`app/db/schema.py` and `app/db/seed.py`.
+By default the demo database is refreshed at backend startup from
+`app/db/schema.py` and `app/db/seed.py`. Use `--keep-db` to preserve local edits
+between backend restarts:
+
+```bash
+python -m app.run_backend --keep-db --reload --port 8080
+```
+
+If you launch uvicorn directly, set `HEXAGONE_RESET_DB=0` to keep the DB or
+`HEXAGONE_RESET_DB=1` to reset it.
 
 ## Frontend
 
@@ -172,11 +180,11 @@ erDiagram
 
 ### Reset the Demo Database
 
-The local SQLite file is `hexagone_talents.db` and is ignored by git. It is
-rebuilt from scratch every time the FastAPI backend starts:
+The local SQLite file is `hexagone_talents.db` and is ignored by git. To rebuild
+it from scratch:
 
 ```bash
-uvicorn app.main:app --reload --port 8080
+python -m app.run_backend --reset-db --reload --port 8080
 ```
 
 ## Structure
