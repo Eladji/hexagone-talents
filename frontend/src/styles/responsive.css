@@ -60,6 +60,15 @@
     grid-template-columns: 1fr;
   }
 
+  .candidate-filters {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .candidate-filters label:first-child,
+  .filter-summary {
+    grid-column: 1 / -1;
+  }
+
   .profile-photo,
   .profile-photo.placeholder {
     width: 120px;

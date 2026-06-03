@@ -1,9 +1,11 @@
 import { Panel } from "../../components/ui";
 import { getOfferId } from "./companyUtils";
 import { ActiveOfferSummary, OfferSelector } from "./OfferManagement";
+import { useCandidateFilters } from "./useCandidateFilters";
 
 export function CandidatesList({ api, offers, activeOfferId, setActiveOfferId, candidates, setCandidates, setView }) {
   const activeOffer = offers.find((offer) => getOfferId(offer) === activeOfferId) || offers[0];
+  const candidateFilters = useCandidateFilters(candidates);
 
   async function decide(candidate, decision) {
     await submitCompanySwipe(api, activeOfferId, candidate.student_id, decision);
@@ -21,10 +23,13 @@ export function CandidatesList({ api, offers, activeOfferId, setActiveOfferId, c
         </div>
       </Panel>
       <Panel title={`Candidats - ${activeOffer?.title || "Offre"}`}>
+        <CandidateFilters filters={candidateFilters} totalCount={candidates.length} />
         {candidates.length === 0 ? (
           <p className="muted">Aucun candidat pour l'instant sur cette offre.</p>
+        ) : candidateFilters.filteredCandidates.length === 0 ? (
+          <p className="muted">Aucun candidat ne correspond aux filtres.</p>
         ) : (
-          candidates.map((candidate) => (
+          candidateFilters.filteredCandidates.map((candidate) => (
             <article key={candidate.student_id} className="candidate-list-card">
               <CandidateAvatar candidate={candidate} />
               <CandidateSummary candidate={candidate} />
@@ -36,6 +41,41 @@ export function CandidatesList({ api, offers, activeOfferId, setActiveOfferId, c
           ))
         )}
       </Panel>
+    </div>
+  );
+}
+
+function CandidateFilters({ filters, totalCount }) {
+  return (
+    <div className="candidate-filters">
+      <label>
+        Recherche
+        <input
+          type="search"
+          value={filters.filters.search}
+          onChange={(event) => filters.setSearch(event.target.value)}
+          placeholder="Nom, bio, competence"
+        />
+      </label>
+      <label>
+        Competence
+        <select value={filters.filters.skill} onChange={(event) => filters.setSkill(event.target.value)}>
+          <option value="">Toutes</option>
+          {filters.skillOptions.map((skill) => <option key={skill} value={skill}>{skill}</option>)}
+        </select>
+      </label>
+      <label>
+        Score min
+        <select value={filters.filters.minimumScore} onChange={(event) => filters.setMinimumScore(Number(event.target.value))}>
+          {filters.scoreFilters.map((scoreFilter) => (
+            <option key={scoreFilter.value} value={scoreFilter.value}>{scoreFilter.label}</option>
+          ))}
+        </select>
+      </label>
+      <div className="filter-summary">
+        <span>{filters.filteredCandidates.length} / {totalCount}</span>
+        <button disabled={!filters.hasActiveFilters} onClick={filters.resetFilters}>Reinitialiser</button>
+      </div>
     </div>
   );
 }
