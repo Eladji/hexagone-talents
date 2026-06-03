@@ -50,14 +50,18 @@ def student_profile(
 @router.get("/{student_id}/likes")
 def student_likes(
     student_id: int,
-    _: dict[str, Any] = Depends(require_role("ETUDIANT")),
+    auth: dict[str, Any] = Depends(require_role("ETUDIANT")),
 ) -> list[dict[str, Any]]:
+    if student_id != auth["user_id"]:
+        raise HTTPException(status_code=403, detail={"message": "Vous ne pouvez consulter que vos propres likes."})
     return matching_service.student_likes(student_id)
 
 
 @router.get("/{student_id}/matches")
 def student_matches(
     student_id: int,
-    _: dict[str, Any] = Depends(require_role("ETUDIANT", "ENTREPRISE")),
+    auth: dict[str, Any] = Depends(require_role("ETUDIANT", "ENTREPRISE")),
 ) -> list[dict[str, Any]]:
+    if auth["role"] == "ETUDIANT" and student_id != auth["user_id"]:
+        raise HTTPException(status_code=403, detail={"message": "Vous ne pouvez consulter que vos propres matches."})
     return matching_service.student_matches(student_id)

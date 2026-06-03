@@ -1,0 +1,57 @@
+.skill-board,
+.project-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 10px;
+}
+
+.skill-tile {
+  display: grid;
+  gap: 4px;
+  padding: 12px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+
+.skill-tile strong {
+  font-size: 13px;
+}
+
+.skill-tile span {
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.profile-projects {
+  margin-top: 16px;
+}
+
+.profile-projects h3 {
+  margin: 0 0 10px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.project-card {
+  background: var(--accent);
+  border: 1px solid #d4941f;
+  border-radius: 4px;
+  padding: 10px;
+  margin-bottom: 8px;
+  font-size: 11px;
+}
+
+.project-card strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.project-card p {
+  margin: 0;
+  color: #333;
+  font-size: 11px;
+}
+

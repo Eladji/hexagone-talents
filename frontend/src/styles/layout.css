@@ -1,0 +1,136 @@
+/* ===== APP LAYOUT ===== */
+
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.topbar {
+  background: var(--primary);
+  color: white;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+
+.mark {
+  width: 32px;
+  height: 32px;
+  background: var(--accent);
+  color: var(--text);
+  border-radius: 4px;
+  display: grid;
+  place-items: center;
+  font-weight: 900;
+  font-size: 16px;
+}
+
+.brand > div {
+  font-size: 13px;
+}
+
+.brand strong {
+  display: block;
+  font-weight: 700;
+}
+
+.brand span {
+  display: block;
+  font-size: 10px;
+  opacity: 0.85;
+}
+
+.ghost-button {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  min-height: 30px;
+  padding: 6px 14px;
+  font-size: 12px;
+}
+
+.ghost-button:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.workspace {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.side-rail {
+  width: 180px;
+  background: var(--bg-secondary);
+  border-right: 1px solid var(--border);
+  padding: 16px 12px;
+  overflow-y: auto;
+}
+
+.side-rail .eyebrow {
+  margin: 0;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  letter-spacing: 0.5px;
+}
+
+.side-rail h2 {
+  margin: 0 0 16px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.nav-list {
+  display: grid;
+  gap: 6px;
+}
+
+.nav-list button {
+  width: 100%;
+  text-align: left;
+  padding: 8px 10px;
+  min-height: 30px;
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.nav-list button:hover {
+  background: white;
+  color: var(--text);
+  border-color: var(--primary);
+}
+
+.nav-list .active {
+  color: white;
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+.content-stage {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  align-content: start;
+}
+

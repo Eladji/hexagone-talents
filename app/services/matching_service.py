@@ -47,6 +47,8 @@ def submit_swipe(payload: SwipeRequest, auth: dict[str, Any]) -> dict[str, Any]:
             ensure_company_owns_offer(conn, auth["user_id"], payload.offer_id)
             decision_column = "company_decision"
         elif payload.actor_role == "ETUDIANT":
+            if payload.student_id != auth["user_id"]:
+                raise HTTPException(status_code=403, detail={"message": "Vous ne pouvez swiper que pour votre propre profil."})
             decision_column = "student_decision"
         else:
             raise HTTPException(status_code=400, detail={"message": "Seuls les etudiants et entreprises peuvent swiper."})

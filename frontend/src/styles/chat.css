@@ -1,0 +1,153 @@
+/* ===== CHAT ===== */
+
+.chat-layout {
+  grid-template-columns: minmax(230px, 320px) 1fr;
+  align-items: start;
+}
+
+.chat-phone {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  min-height: 420px;
+  overflow: hidden;
+}
+
+.chat-header {
+  padding: 16px;
+  border-bottom: 1px solid var(--border);
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  gap: 12px;
+  align-items: center;
+  background: #f6f7fb;
+}
+
+.chat-header div {
+  display: grid;
+  gap: 2px;
+}
+
+.chat-header strong {
+  font-size: 14px;
+}
+
+.chat-header span {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.conversation {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 36px 1fr;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 8px;
+  background: white;
+  color: var(--text);
+  border: 1px solid var(--border);
+  text-align: left;
+  padding: 8px;
+}
+
+.conversation:hover,
+.conversation.active {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.conversation span {
+  display: grid;
+  gap: 2px;
+}
+
+.conversation strong {
+  font-size: 12px;
+}
+
+.conversation small {
+  color: var(--text-muted);
+  font-size: 10px;
+}
+
+.conversation.active small,
+.conversation:hover small {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.conversation-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 4px;
+  object-fit: cover;
+  background: var(--accent);
+  color: #333;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  font-weight: 900;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.chat-header .conversation-avatar {
+  width: 44px;
+  height: 44px;
+}
+
+.chat-stream {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  min-height: 400px;
+  overflow: hidden;
+}
+
+.chat-stream {
+  padding: 12px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.bubble {
+  background: var(--accent);
+  color: #333;
+  border-radius: 4px;
+  padding: 10px 12px;
+  font-size: 12px;
+  max-width: 70%;
+  border: 1px solid #d4941f;
+}
+
+.bubble.mine {
+  background: var(--primary);
+  color: white;
+  align-self: flex-end;
+  border-color: var(--primary);
+}
+
+.composer {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  padding: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.composer input {
+  padding: 8px 10px;
+}
+
+.composer button {
+  min-height: 32px;
+  padding: 6px 14px;
+}
+

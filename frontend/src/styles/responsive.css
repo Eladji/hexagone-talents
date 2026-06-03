@@ -1,0 +1,115 @@
+/* ===== UTILITIES ===== */
+
+.muted {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.toast {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--text);
+  color: white;
+  padding: 10px 16px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+}
+
+/* ===== RESPONSIVE ===== */
+
+@media (max-width: 768px) {
+  .workspace {
+    flex-direction: column;
+  }
+
+  .side-rail {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    padding: 8px 12px;
+  }
+
+  .nav-list {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+  }
+
+  .nav-list button {
+    min-width: 60px;
+    white-space: nowrap;
+  }
+
+  .content-stage {
+    padding: 12px;
+  }
+
+  .button-row,
+  .quick-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .candidates-page,
+  .chat-layout,
+  .profile-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-photo,
+  .profile-photo.placeholder {
+    width: 120px;
+    height: 120px;
+  }
+
+  .profile-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .candidate-list-card {
+    grid-template-columns: 64px 1fr;
+  }
+
+  .candidate-list-card .swipe-actions {
+    grid-column: 1 / -1;
+  }
+
+  .candidate-photo,
+  .candidate-initials {
+    width: 64px;
+    height: 64px;
+  }
+}
+
+@media (max-width: 480px) {
+  .topbar {
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 10px 12px;
+  }
+
+  .brand {
+    width: 100%;
+  }
+
+  .ghost-button {
+    width: 100%;
+  }
+
+  .content-stage {
+    padding: 8px;
+  }
+
+  .panel,
+  .profile-card {
+    padding: 12px;
+  }
+
+  .auth-card {
+    padding: 16px 12px;
+  }
+}

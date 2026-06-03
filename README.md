@@ -18,8 +18,8 @@ uvicorn app.main:app --reload --port 8080
 
 The API is exposed under `http://localhost:8080/api`.
 
-The database is created automatically at startup from `app/db/schema.py` and
-seeded from `app/db/seed.py` when it is empty.
+The demo database is refreshed automatically at backend startup from
+`app/db/schema.py` and `app/db/seed.py`.
 
 ## Frontend
 
@@ -114,6 +114,9 @@ erDiagram
         string timestamp
     }
 
+    USER ||--o| STUDENT : authenticates
+    USER ||--o| COMPANY : authenticates
+    USER ||--o| STAFF : authenticates
     STUDENT ||--o{ PROJECT : creates
     STUDENT ||--o{ APPLICATION_MATCH : receives
     STUDENT ||--o{ SKILL : suggests
@@ -130,7 +133,7 @@ erDiagram
 - `users(id, username, password, role, linked_id)`
   - `username` is unique.
   - `role` is one of `ETUDIANT`, `ENTREPRISE`, `STAFF`.
-  - `linked_id` points to the corresponding student, company, or staff record.
+  - `linked_id` points to `student(id)`, `company(id)`, or `staff(id)` depending on `role`.
 - `student(id, firstname, lastname, bio, email, phone, avatar_url)`
 - `company(id, name, email, phone)`
 - `staff(id, firstname, lastname, email, phone)`
@@ -169,11 +172,10 @@ erDiagram
 
 ### Reset the Demo Database
 
-The local SQLite file is `hexagone_talents.db` and is ignored by git. To rebuild
-the demo data from scratch:
+The local SQLite file is `hexagone_talents.db` and is ignored by git. It is
+rebuilt from scratch every time the FastAPI backend starts:
 
 ```bash
-rm hexagone_talents.db
 uvicorn app.main:app --reload --port 8080
 ```
 
@@ -197,20 +199,14 @@ app/
 Use `POST /api/auth/login` or the login screen with one of these usernames.
 The demo password is `password123`.
 
-- `antoine.dev` -> `ETUDIANT`, user id `12`
-- `maxime.dev` -> `ETUDIANT`, user id `15`
-- `lucie.dev` -> `ETUDIANT`, user id `18`
-- `nathalie.dev` -> `ETUDIANT`, user id `21`
-- `anais.dev` -> `ETUDIANT`, user id `24`
-- `sophie.dev` -> `ETUDIANT`, user id `27`
-- `julien.dev` -> `ETUDIANT`, user id `30`
-- `clara.dev` -> `ETUDIANT`, user id `33`
-- `tech.solutions` -> `ENTREPRISE`, user id `201`
-- `innovate.labs` -> `ENTREPRISE`, user id `202`
-- `mobilio.team` -> `ENTREPRISE`, user id `203`
-- `data.hive` -> `ENTREPRISE`, user id `204`
-- `creative.studio` -> `ENTREPRISE`, user id `205`
-- `cloudworks` -> `ENTREPRISE`, user id `206`
+- Students: `antoine.dev` (`12`), `maxime.dev` (`15`), `lucie.dev` (`18`),
+  `nathalie.dev` (`21`), `anais.dev` (`24`), `sophie.dev` (`27`),
+  `julien.dev` (`30`), `clara.dev` (`33`), `maya.dev` (`36`),
+  `hugo.dev` (`39`), `ines.dev` (`42`), `karim.dev` (`45`).
+- Companies: `tech.solutions` (`201`), `innovate.labs` (`202`),
+  `mobilio.team` (`203`), `data.hive` (`204`), `creative.studio` (`205`),
+  `cloudworks` (`206`), `greenops` (`207`), `finovia` (`208`),
+  `healthbridge` (`209`), `studio.atlas` (`210`).
 - `staff` -> `STAFF`, user id `1`
 
 For protected routes, send:

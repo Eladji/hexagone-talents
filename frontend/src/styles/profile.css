@@ -1,0 +1,147 @@
+/* ===== PROFILE ===== */
+
+.avatar-block {
+  background: #444;
+  color: white;
+  border-radius: 4px;
+  min-height: 120px;
+  display: grid;
+  place-items: center;
+  font-size: 32px;
+  font-weight: 900;
+  margin-bottom: 8px;
+}
+
+.profile-card {
+  min-height: auto;
+}
+
+.user-profile-page {
+  display: grid;
+  gap: 16px;
+}
+
+.profile-hero {
+  display: grid;
+  grid-template-columns: 160px 1fr auto;
+  gap: 18px;
+  align-items: center;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 18px;
+}
+
+.profile-photo {
+  width: 160px;
+  height: 160px;
+  border-radius: 4px;
+  object-fit: cover;
+  border: 2px solid var(--primary);
+  background: var(--bg-secondary);
+}
+
+.profile-photo.placeholder {
+  display: grid;
+  place-items: center;
+  color: white;
+  background: var(--primary);
+  font-size: 42px;
+  font-weight: 900;
+}
+
+.profile-photo-editor {
+  display: grid;
+  gap: 10px;
+  justify-items: start;
+}
+
+.profile-photo-preview {
+  width: 120px;
+  height: 120px;
+  border: 2px solid var(--primary);
+  border-radius: 4px;
+  object-fit: cover;
+  background: var(--bg-secondary);
+}
+
+.profile-photo-preview.placeholder {
+  display: grid;
+  place-items: center;
+  color: white;
+  background: var(--primary);
+  font-size: 34px;
+  font-weight: 900;
+}
+
+.profile-identity {
+  display: grid;
+  gap: 8px;
+}
+
+.profile-identity .eyebrow {
+  color: var(--primary);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.profile-identity h1 {
+  margin: 0;
+  font-size: 28px;
+  line-height: 1.1;
+}
+
+.profile-identity p,
+.profile-contact span {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.profile-contact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.profile-contact span {
+  padding: 6px 10px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+
+.profile-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.profile-stats div,
+.profile-section {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 16px;
+}
+
+.profile-stats span {
+  display: block;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.profile-stats strong {
+  display: block;
+  margin-top: 4px;
+  font-size: 22px;
+}
+
+.profile-section h2 {
+  margin: 0 0 12px;
+  font-size: 14px;
+}
+

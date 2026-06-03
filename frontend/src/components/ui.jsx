@@ -17,7 +17,7 @@ export function HeroMetric({ title, value, text }) {
   );
 }
 
-export function OfferRow({ offer, actionLabel, onAction, active, meta }) {
+export function OfferRow({ offer, actionLabel, onAction, actionDisabled, active, meta }) {
   return (
     <article className={`offer-row ${active ? "active" : ""}`}>
       <div>
@@ -26,7 +26,7 @@ export function OfferRow({ offer, actionLabel, onAction, active, meta }) {
         <p>{offer.description}</p>
         {meta && <small>{meta}</small>}
       </div>
-      {actionLabel && <button onClick={onAction}>{actionLabel}</button>}
+      {actionLabel && <button disabled={actionDisabled} onClick={onAction}>{actionLabel}</button>}
     </article>
   );
 }

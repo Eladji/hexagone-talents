@@ -1,0 +1,132 @@
+/* ===== CANDIDATE CARD ===== */
+
+.candidate-card {
+  min-height: auto;
+  display: grid;
+  gap: 14px;
+}
+
+.avatar-photo,
+.candidate-avatar,
+.candidate-photo {
+  width: 100%;
+  max-width: 140px;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 4px;
+  border: 2px solid var(--primary);
+}
+
+.candidate-avatar,
+.candidate-photo {
+  width: 80px;
+  height: 80px;
+}
+
+.candidate-photo.large,
+.candidate-initials.large {
+  width: 180px;
+  height: 180px;
+  max-width: 180px;
+}
+
+.candidate-initials {
+  width: 80px;
+  height: 80px;
+  border-radius: 4px;
+  display: grid;
+  place-items: center;
+  background: var(--primary);
+  color: white;
+  font-size: 24px;
+  font-weight: 900;
+  border: 2px solid var(--primary);
+  flex: none;
+}
+
+.candidate-list-card {
+  display: grid;
+  grid-template-columns: 80px 1fr auto;
+  gap: 14px;
+  align-items: center;
+  padding: 14px;
+  margin-bottom: 10px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+
+.candidate-list-card:last-child {
+  margin-bottom: 0;
+}
+
+.candidate-summary {
+  display: grid;
+  gap: 10px;
+}
+
+.candidate-summary h3 {
+  margin: 0 0 4px;
+  font-size: 16px;
+}
+
+.candidate-summary p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.swipe-card {
+  max-width: 520px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.swipe-media {
+  display: grid;
+  grid-template-columns: auto auto;
+  justify-content: space-between;
+  align-items: start;
+  gap: 16px;
+}
+
+.deck-layout,
+.chat-layout {
+  display: grid;
+  gap: 16px;
+}
+
+.swipe-topline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.offer-selector select {
+  width: 100%;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  padding: 10px;
+}
+
+.score-ring {
+  width: 50px;
+  height: 50px;
+  background: var(--primary);
+  color: white;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-weight: 900;
+  font-size: 16px;
+  margin-left: auto;
+}
+
+.swipe-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 16px;
+}
+
