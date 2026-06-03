@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 
-import { HeroMetric, OfferRow, Panel } from "../../components/ui";
+import { OfferRow, Panel } from "../../components/ui";
 import { normalizeSkills, seedSkills } from "../../data/demoData";
 import { ChatPanel } from "../chat/ChatPanel";
 import { ProfileEditor } from "./ProfileEditor";
@@ -94,7 +94,6 @@ export function StudentSpace({ api, session, view, setView }) {
 
   return (
     <div className="screen-grid">
-      <HeroMetric title="Budget RPG" value="100 pts" text="Max 5 competences pour eviter le profil maxxing." />
       <Panel title="Likes en attente">
         {likes.map((offer) => {
           const offerId = offer.offer_id || offer.id;
