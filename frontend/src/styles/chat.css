@@ -25,6 +25,10 @@
   background: #f6f7fb;
 }
 
+.chat-header.empty {
+  grid-template-columns: 1fr;
+}
+
 .chat-header div {
   display: grid;
   gap: 2px;
@@ -150,4 +154,3 @@
   min-height: 32px;
   padding: 6px 14px;
 }
-

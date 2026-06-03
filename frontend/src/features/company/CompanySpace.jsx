@@ -27,9 +27,8 @@ export function CompanySpace({ api, session, view, setView }) {
   useEffect(() => {
     api.safe(seedOffers, () => api.request("/offers")).then((loadedOffers) => {
       const activeOffers = uniqueOffers(loadedOffers.filter((offer) => offer.status !== "ARCHIVED"));
-      if (!activeOffers.length) return;
       setOffers(activeOffers);
-      setActiveOfferId((current) => (activeOffers.some((offer) => getOfferId(offer) === current) ? current : getOfferId(activeOffers[0])));
+      setActiveOfferId((current) => (activeOffers.some((offer) => getOfferId(offer) === current) ? current : getOfferId(activeOffers[0]) || null));
     });
   }, [api]);
 
@@ -38,10 +37,33 @@ export function CompanySpace({ api, session, view, setView }) {
   }, [api]);
 
   useEffect(() => {
-    if (!activeOfferId) return;
+    if (!activeOfferId) {
+      setCandidates([]);
+      setMatches([]);
+      return;
+    }
     api.safe(seedCandidates, () => api.request(`/offers/${activeOfferId}/suggestions`).then((data) => data.candidates)).then(setCandidates);
     api.safe([], () => api.request(`/offers/${activeOfferId}/matches`)).then(setMatches);
   }, [api, activeOfferId]);
+
+  async function closeOffer(offerId) {
+    const offer = offers.find((item) => getOfferId(item) === offerId);
+    if (!offer) return;
+
+    const updated = await api.safe(null, () => api.request(`/offers/${offerId}/archive`, { method: "PATCH" }));
+    if (!updated) return;
+
+    const archivedOffer = {
+      ...offer,
+      status: updated.status,
+      closed_at: updated.closed_at,
+    };
+    const remainingOffers = offers.filter((item) => getOfferId(item) !== offerId);
+
+    setOffers(remainingOffers);
+    setOfferHistory((current) => uniqueOffers([archivedOffer, ...current]));
+    setActiveOfferId((current) => (current === offerId ? getOfferId(remainingOffers[0]) || null : current));
+  }
 
   if (view === "list") {
     return (
@@ -96,6 +118,7 @@ export function CompanySpace({ api, session, view, setView }) {
       setActiveOfferId={setActiveOfferId}
       setView={setView}
       candidates={candidates}
+      closeOffer={closeOffer}
     />
   );
 }

@@ -7,7 +7,7 @@ from fastapi import HTTPException
 
 from app.core.database import get_connection
 from app.schemas.offer import CreateOfferRequest
-from app.services.guards import ensure_company, ensure_skills
+from app.services.guards import ensure_company, ensure_company_owns_offer, ensure_skills
 
 
 def list_offers(auth: dict[str, Any]) -> list[dict[str, Any]]:
@@ -76,3 +76,25 @@ def create_offer(payload: CreateOfferRequest, auth: dict[str, Any]) -> dict[str,
         "description": payload.description,
         "status": "ACTIVE",
     }
+
+
+def archive_offer(offer_id: int, auth: dict[str, Any]) -> dict[str, Any]:
+    company_id = auth["user_id"]
+    closed_at = datetime.utcnow().isoformat(timespec="seconds")
+
+    with get_connection() as conn:
+        ensure_company_owns_offer(conn, company_id, offer_id)
+        offer = conn.execute(
+            "SELECT closed_at FROM offer WHERE id = ?",
+            (offer_id,),
+        ).fetchone()
+
+        if offer["closed_at"]:
+            closed_at = offer["closed_at"]
+        else:
+            conn.execute(
+                "UPDATE offer SET status = 'ARCHIVED', closed_at = ? WHERE id = ?",
+                (closed_at, offer_id),
+            )
+
+    return {"offer_id": offer_id, "status": "ARCHIVED", "closed_at": closed_at}

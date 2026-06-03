@@ -118,8 +118,12 @@
   white-space: nowrap;
 }
 
+.offer-row-actions {
+  display: grid;
+  gap: 8px;
+}
+
 .offer-row.active {
   border-color: var(--primary);
   box-shadow: 0 0 0 2px rgba(73, 105, 178, 0.1);
 }
-

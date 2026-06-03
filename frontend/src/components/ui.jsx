@@ -17,7 +17,21 @@ export function HeroMetric({ title, value, text }) {
   );
 }
 
-export function OfferRow({ offer, actionLabel, onAction, actionDisabled, active, meta }) {
+export function OfferRow({
+  offer,
+  actionLabel,
+  onAction,
+  actionDisabled,
+  actionClassName,
+  secondaryActionLabel,
+  onSecondaryAction,
+  secondaryActionDisabled,
+  secondaryActionClassName,
+  active,
+  meta,
+}) {
+  const hasActions = actionLabel || secondaryActionLabel;
+
   return (
     <article className={`offer-row ${active ? "active" : ""}`}>
       <div>
@@ -26,7 +40,16 @@ export function OfferRow({ offer, actionLabel, onAction, actionDisabled, active,
         <p>{offer.description}</p>
         {meta && <small>{meta}</small>}
       </div>
-      {actionLabel && <button disabled={actionDisabled} onClick={onAction}>{actionLabel}</button>}
+      {hasActions && (
+        <div className="offer-row-actions">
+          {actionLabel && <button className={actionClassName} disabled={actionDisabled} onClick={onAction}>{actionLabel}</button>}
+          {secondaryActionLabel && (
+            <button className={secondaryActionClassName} disabled={secondaryActionDisabled} onClick={onSecondaryAction}>
+              {secondaryActionLabel}
+            </button>
+          )}
+        </div>
+      )}
     </article>
   );
 }

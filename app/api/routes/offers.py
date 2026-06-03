@@ -31,6 +31,14 @@ def create_offer(
     return offer_service.create_offer(payload, auth)
 
 
+@router.patch("/{offer_id}/archive")
+def archive_offer(
+    offer_id: int,
+    auth: dict[str, Any] = Depends(require_role("ENTREPRISE")),
+) -> dict[str, Any]:
+    return offer_service.archive_offer(offer_id, auth)
+
+
 @router.get("/{offer_id}/suggestions")
 def suggested_students(
     offer_id: int,

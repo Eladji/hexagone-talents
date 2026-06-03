@@ -3,7 +3,7 @@ import { useState } from "react";
 import { HeroMetric, OfferRow, Panel } from "../../components/ui";
 import { formatArchiveMeta, getOfferId, getOfferKey, uniqueOffers } from "./companyUtils";
 
-export function CompanyHome({ api, skills, offers, offerHistory, activeOfferId, setOffers, setActiveOfferId, setView, candidates }) {
+export function CompanyHome({ api, skills, offers, offerHistory, activeOfferId, setOffers, setActiveOfferId, setView, candidates, closeOffer }) {
   const activeOffer = offers.find((offer) => getOfferId(offer) === activeOfferId) || offers[0];
 
   return (
@@ -13,11 +13,11 @@ export function CompanyHome({ api, skills, offers, offerHistory, activeOfferId, 
         <OfferSelector offers={offers} activeOfferId={activeOfferId} onSelect={setActiveOfferId} />
         <ActiveOfferSummary offer={activeOffer} count={candidates.length} />
         <div className="button-row">
-          <button className="primary-button" onClick={() => setView("list")}>Liste candidats</button>
-          <button onClick={() => setView("swipe")}>Swipe</button>
+          <button className="primary-button" disabled={!activeOffer} onClick={() => setView("list")}>Liste candidats</button>
+          <button disabled={!activeOffer} onClick={() => setView("swipe")}>Swipe</button>
         </div>
       </Panel>
-      <PublishedOffers offers={offers} activeOfferId={activeOfferId} setActiveOfferId={setActiveOfferId} setView={setView} />
+      <PublishedOffers offers={offers} activeOfferId={activeOfferId} setActiveOfferId={setActiveOfferId} setView={setView} closeOffer={closeOffer} />
       <ArchivedOffers offerHistory={offerHistory} />
       <HeroMetric title="Candidats disponibles" value={candidates.length} text="Changez d'offre a tout moment pour rafraichir la file." />
     </div>
@@ -29,7 +29,7 @@ export function OfferSelector({ offers, activeOfferId, onSelect }) {
     <div className="offer-selector">
       <label>
         Offre
-        <select value={activeOfferId} onChange={(event) => onSelect(Number(event.target.value))}>
+        <select value={activeOfferId || ""} disabled={offers.length === 0} onChange={(event) => onSelect(Number(event.target.value))}>
           {offers.map((offer) => (
             <option key={getOfferKey(offer)} value={getOfferId(offer)}>
               {offer.company_name} - {offer.title || offer.offer_title}
@@ -88,21 +88,32 @@ function OfferCreator({ api, skills, setOffers, setActiveOfferId, setView }) {
   );
 }
 
-function PublishedOffers({ offers, activeOfferId, setActiveOfferId, setView }) {
+function PublishedOffers({ offers, activeOfferId, setActiveOfferId, setView, closeOffer }) {
   return (
     <Panel title="Offres publiees">
-      {offers.map((offer) => (
-        <OfferRow
-          key={getOfferKey(offer)}
-          offer={offer}
-          active={getOfferId(offer) === activeOfferId}
-          actionLabel="Voir"
-          onAction={() => {
-            setActiveOfferId(getOfferId(offer));
-            setView("swipe");
-          }}
-        />
-      ))}
+      {offers.length === 0 ? (
+        <p className="muted">Aucune offre publiee pour l'instant.</p>
+      ) : (
+        offers.map((offer) => {
+          const offerId = getOfferId(offer);
+
+          return (
+            <OfferRow
+              key={getOfferKey(offer)}
+              offer={offer}
+              active={offerId === activeOfferId}
+              actionLabel="Voir"
+              onAction={() => {
+                setActiveOfferId(offerId);
+                setView("swipe");
+              }}
+              secondaryActionLabel="Fermer"
+              secondaryActionClassName="danger-button"
+              onSecondaryAction={() => closeOffer(offerId)}
+            />
+          );
+        })
+      )}
     </Panel>
   );
 }

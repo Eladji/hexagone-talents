@@ -12,7 +12,10 @@ export function ChatPanel({ api, matches, role }) {
   }, [matches]);
 
   useEffect(() => {
-    if (!active) return;
+    if (!active) {
+      setMessages([]);
+      return;
+    }
     api.safe([], () => api.request(`/messages/${active}`)).then(setMessages);
   }, [active, api]);
 
@@ -31,8 +34,11 @@ export function ChatPanel({ api, matches, role }) {
   }
 
   const activeConversation = matches.find((match) => match.match_id === active);
-  const activeTitle = activeConversation?.offer_title || `${activeConversation?.firstname || ""} ${activeConversation?.lastname || ""}`;
+  const activeTitle = activeConversation
+    ? activeConversation.offer_title || `${activeConversation.firstname || ""} ${activeConversation.lastname || ""}`.trim()
+    : "";
   const activeSubtitle = activeConversation?.company_name || activeConversation?.email || activeConversation?.contact_email || "";
+  const emptyMessage = active ? "Aucun message pour le moment." : "Aucune conversation active.";
 
   return (
     <div className="chat-layout">
@@ -53,15 +59,15 @@ export function ChatPanel({ api, matches, role }) {
         ))}
       </Panel>
       <section className="phone-panel chat-phone">
-        <div className="chat-header">
-          <ConversationAvatar match={activeConversation} />
+        <div className={`chat-header ${activeConversation ? "" : "empty"}`}>
+          {activeConversation && <ConversationAvatar match={activeConversation} />}
           <div>
             <strong>{activeTitle || "Selectionnez une conversation"}</strong>
             {activeSubtitle && <span>{activeSubtitle}</span>}
           </div>
         </div>
         <div className="chat-stream">
-          {(messages.length ? messages : [{ sender_role: "SYSTEM", content: "Aucun message pour le moment." }]).map((message, index) => (
+          {(messages.length ? messages : [{ sender_role: "SYSTEM", content: emptyMessage }]).map((message, index) => (
             <div className={`bubble ${message.sender_role === role ? "mine" : ""}`} key={`${message.timestamp || index}-${message.content}`}>
               {message.content}
             </div>
