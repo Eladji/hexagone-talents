@@ -15,7 +15,13 @@ source .venv/bin/activate
 pip install -r requirements.txt
 python -m app.run_backend --reset-db --reload --port 8080
 ```
-
+## On Windows on cmd
+```bash
+python -m venv .venv
+venv/Scripts/activate.bat
+pip install -r requirements.txt
+python -m app.run_backend --reset-db --reload --port 8080
+```
 The API is exposed under `http://localhost:8080/api`.
 
 By default the demo database is refreshed at backend startup from
